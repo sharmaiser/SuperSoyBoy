@@ -19,6 +19,8 @@ public class SoyBoyController : MonoBehaviour
     private float height;
     public float jumpDurationThreshold = 0.25f;
     private float jumpDuration;
+    public float airAccel = 3f;
+    public float jump = 14f;
 
     void Awake()
     {
@@ -87,7 +89,7 @@ public class SoyBoyController : MonoBehaviour
 
         if (PlayerIsOnGround() && isJumping == false)
         {
-            if (input.y > 0f)
+            if (PlayerIsOnGround() && input.x == 0)
             {
                 isJumping = true;
             }
@@ -95,12 +97,54 @@ public class SoyBoyController : MonoBehaviour
 
         if (jumpDuration > jumpDurationThreshold) input.y = 0f;
 
+
+
+    }
+
+    public bool IsWallToLeftOrRight()
+    {
+        // 1
+        bool wallOnleft = Physics2D.Raycast(new Vector2(
+        transform.position.x - width, transform.position.y),
+        -Vector2.right, rayCastLengthCheck);
+        bool wallOnRight = Physics2D.Raycast(new Vector2(
+        transform.position.x + width, transform.position.y),
+        Vector2.right, rayCastLengthCheck);
+        // 2
+        if (wallOnleft || wallOnRight)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public bool PlayerIsTouchingGroundOrWall()
+    {
+        if (PlayerIsOnGround() || IsWallToLeftOrRight())
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     void FixedUpdate()
     {
         // 1
-        var acceleration = accel;
+        var acceleration = 0f;
+        if (PlayerIsOnGround())
+        {
+            acceleration = accel;
+        }
+        else
+        {
+            acceleration = airAccel;
+        }
         var xVelocity = 0f;
         // 2
         if (input.x == 0)
@@ -110,6 +154,16 @@ public class SoyBoyController : MonoBehaviour
         else
         {
             xVelocity = rb.velocity.x;
+        }
+
+        var yVelocity = 0f;
+        if (PlayerIsTouchingGroundOrWall() && input.y == 1)
+        {
+            yVelocity = jump;
+        }
+        else
+        {
+            yVelocity = rb.velocity.y;
         }
         // 3
         rb.AddForce(new Vector2(((input.x * speed) - rb.velocity.x)
