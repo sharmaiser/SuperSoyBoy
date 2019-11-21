@@ -67,6 +67,8 @@ public class SoyBoyController : MonoBehaviour
         // 1
         input.x = Input.GetAxis("Horizontal");
         input.y = Input.GetAxis("Jump");
+
+        animator.SetFloat("Speed", Mathf.Abs(input.x));
         // 2
         if (input.x > 0f)
         {
@@ -80,10 +82,12 @@ public class SoyBoyController : MonoBehaviour
         if (input.y >= 1f)
         {
             jumpDuration += Time.deltaTime;
+            animator.SetBool("IsJumping", true);
         }
         else
         {
             isJumping = false;
+            animator.SetBool("IsJumping", false);
             jumpDuration = 0f;
         }
 
@@ -95,10 +99,12 @@ public class SoyBoyController : MonoBehaviour
             }
         }
 
-        if (jumpDuration > jumpDurationThreshold) input.y = 0f;
+        if (jumpDuration > jumpDurationThreshold)
+        {
+            input.y = 0f;
+        }
 
-
-
+        animator.SetBool("IsOnWall", false);
     }
 
     public bool IsWallToLeftOrRight()
@@ -130,6 +136,28 @@ public class SoyBoyController : MonoBehaviour
         else
         {
             return false;
+        }
+    }
+
+    public int GetWallDirection()
+    {
+        bool isWallLeft = Physics2D.Raycast(new Vector2(
+        transform.position.x - width, transform.position.y),
+        -Vector2.right, rayCastLengthCheck);
+        bool isWallRight = Physics2D.Raycast(new Vector2(
+        transform.position.x + width, transform.position.y),
+        Vector2.right, rayCastLengthCheck);
+        if (isWallLeft)
+        {
+            return -1;
+        }
+        else if (isWallRight)
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
         }
     }
 
@@ -169,7 +197,24 @@ public class SoyBoyController : MonoBehaviour
         rb.AddForce(new Vector2(((input.x * speed) - rb.velocity.x)
          * acceleration, 0));
         // 4
-        rb.velocity = new Vector2(xVelocity, rb.velocity.y);
+        rb.velocity = new Vector2(xVelocity, yVelocity);
+
+        if (IsWallToLeftOrRight() && !PlayerIsOnGround() && input.y == 1)
+        {
+            rb.velocity = new Vector2(-GetWallDirection() * speed
+            * 0.75f, rb.velocity.y);
+            animator.SetBool("IsOnWall", false);
+            animator.SetBool("IsJumping", true);
+        }
+        else if (!IsWallToLeftOrRight())
+        {
+            animator.SetBool("IsOnWall", false);
+            animator.SetBool("IsJumping", true);
+        }
+        if (IsWallToLeftOrRight() && !PlayerIsOnGround())
+        {
+            animator.SetBool("IsOnWall", true);
+        }
 
         if (isJumping && jumpDuration < jumpDurationThreshold)
         {
