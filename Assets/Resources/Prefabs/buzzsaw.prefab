@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 6100175240109984232}
   - component: {fileID: 1545989297}
   - component: {fileID: 1545989298}
+  - component: {fileID: 469813535337714478}
   m_Layer: 0
   m_Name: buzzsaw
   m_TagString: Untagged
@@ -232,3 +233,16 @@ MonoBehaviour:
   playerDeathPrefab: {fileID: 0}
   deathClip: {fileID: 8300000, guid: 20d68b3df7b8bf047a3ed6c5e47ae6c5, type: 3}
   hitSprite: {fileID: 21300000, guid: e34df7d72fac13944bc0e0fe2b92e9cd, type: 3}
+--- !u!114 &469813535337714478
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6100175240109984235}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fd4cb920f421544e84a14a07b652728, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rotationsPerMinute: 640
